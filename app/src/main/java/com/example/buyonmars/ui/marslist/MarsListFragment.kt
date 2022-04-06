@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.buyonmars.databinding.FragmentMarsListBinding
+import com.example.buyonmars.models.dto.MarsProperty
 import com.example.buyonmars.ui.marslist.adapter.MarsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,9 +27,10 @@ class MarsListFragment : Fragment(), MarsAdapter.MarsAdapterActions {
         binding.lifecycleOwner = this
 
         viewModel.setAdapterOnView.observe(viewLifecycleOwner, Observer {
-            binding.recycler.adapter = context?.let {
-                viewModel.properties?.value?.let { properties -> MarsAdapter(properties, this, requireContext()) }
-            }
+            binding.recycler.adapter =
+                viewModel.properties?.value?.let { properties ->
+                    viewModel.favorites.value?.let { favorites -> MarsAdapter(properties, favorites, this, requireContext()) }
+                }
         })
 
         binding.recycler.layoutManager = GridLayoutManager(this.context, 2)
@@ -37,7 +39,15 @@ class MarsListFragment : Fragment(), MarsAdapter.MarsAdapterActions {
         return binding.root
     }
 
-    override fun addToFavorite(id: Int) {
+    override fun addToFavorite(marsProperty: MarsProperty) {
+        viewModel.insert(marsProperty)
+    }
+
+    override fun removeFavorite(marsProperty: MarsProperty) {
+        viewModel.delete(marsProperty)
+    }
+
+    override fun navigatToProperty(id: Int) {
 
     }
 

@@ -12,18 +12,26 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.buyonmars.R
+import com.example.buyonmars.base.favorites.Favorite
 import com.example.buyonmars.models.dto.MarsProperty
 import java.lang.reflect.Method
 
 class MarsAdapter(
     private val marsList: List<MarsProperty>,
+    private val favorites: List<Favorite>,
     val listener: MarsAdapterActions,
     val context: Context
 ) :
     RecyclerView.Adapter<MarsAdapter.MarsViewHolder>() {
 
     interface MarsAdapterActions {
-        fun addToFavorite(id: Int)
+        fun addToFavorite(mars: MarsProperty)
+        fun removeFavorite(mars: MarsProperty)
+        fun navigatToProperty(id: Int)
+    }
+
+    fun notifyChanges() {
+        notifyDataSetChanged()
     }
 
     class MarsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -48,6 +56,8 @@ class MarsAdapter(
         holder.price.text = currentItem.price.toString()
         holder.type.text = currentItem.type
 
+        val isFavorite = favorites.filter { it.marsId == currentItem.id }
+
         val uri: String = currentItem.url
 
         Glide.with(holder.itemView.context)
@@ -55,7 +65,24 @@ class MarsAdapter(
             .into(holder.photo)
 
         holder.itemView.setOnClickListener {
-//            listener.navigateToSelectedMole(currentItem.id)
+            listener.navigatToProperty(currentItem.id.toInt())
+        }
+
+        if (isFavorite.isEmpty()) {
+            holder.favorite.setImageResource(R.drawable.ic_love_unmark)
+
+            holder.favorite.setOnClickListener {
+                listener.addToFavorite(currentItem)
+                holder.favorite.setImageResource(R.drawable.ic_love)
+            }
+
+        } else {
+            holder.favorite.setImageResource(R.drawable.ic_love)
+
+            holder.favorite.setOnClickListener {
+                listener.removeFavorite(currentItem)
+                holder.favorite.setImageResource(R.drawable.ic_love_unmark)
+            }
         }
 
         when (currentItem.type) {
@@ -79,7 +106,7 @@ class MarsAdapter(
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.favorite -> {
-                        listener.addToFavorite(mars.id.toInt())
+                        listener.addToFavorite(mars)
                     }
                 }
                 false
