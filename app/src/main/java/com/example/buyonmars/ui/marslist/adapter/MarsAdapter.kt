@@ -3,9 +3,7 @@ package com.example.buyonmars.ui.marslist.adapter
 import android.animation.Animator
 import android.content.Context
 import android.os.Build
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
@@ -28,7 +26,7 @@ class MarsAdapter(
 
     interface MarsAdapterActions {
         fun addToFavorite(mars: MarsProperty, callback: (() -> Unit)? = null)
-        fun removeFavorite(mars: MarsProperty)
+        fun removeFavorite(mars: MarsProperty, callback: (() -> Unit)? = null)
         fun navigatToProperty(id: Int)
     }
 
@@ -78,19 +76,47 @@ class MarsAdapter(
                 holder.favorite.tag = R.drawable.ic_love_unmark
             }
 
+            val gd = GestureDetector(itemView.context, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onDoubleTap(e: MotionEvent): Boolean {
+                    if (holder.favorite.tag == R.drawable.ic_love_unmark) {
+                        holder.favorite.setImageResource(R.drawable.ic_love)
+                        holder.favorite.tag = R.drawable.ic_love
+                        listener.addToFavorite(currentItem) {
+                            holder.lottieLove.speed = 1F
+                            showLottieAnimation(holder, "new_love.json")
+                        }
+                        favorites.add(Favorite(currentItem.id, currentItem.url, currentItem.type, currentItem.price))
+                    } else {
+                        holder.favorite.setImageResource(R.drawable.ic_love_unmark)
+                        holder.favorite.tag = R.drawable.ic_love_unmark
+                        listener.removeFavorite(currentItem) {
+                            holder.lottieLove.speed = -2F
+                            showLottieAnimation(holder, "new_love.json")
+                        }
+                        favorites.remove(Favorite(currentItem.id, currentItem.url, currentItem.type, currentItem.price))
+                    }
+                    return true
+                }
+            })
+
+            holder.itemView.setOnTouchListener { _, event -> gd.onTouchEvent(event) }
+
             holder.favorite.setOnClickListener {
                 if (holder.favorite.tag == R.drawable.ic_love_unmark) {
                     holder.favorite.setImageResource(R.drawable.ic_love)
                     holder.favorite.tag = R.drawable.ic_love
                     listener.addToFavorite(currentItem) {
-                        holder.lottieLove.setAnimation("love.json")
-                        showLottieAnimation(this, "love.json")
+                        holder.lottieLove.speed = 1F
+                        showLottieAnimation(this, "new_love.json")
                     }
                     favorites.add(Favorite(currentItem.id, currentItem.url, currentItem.type, currentItem.price))
                 } else {
                     holder.favorite.setImageResource(R.drawable.ic_love_unmark)
                     holder.favorite.tag = R.drawable.ic_love_unmark
-                    listener.removeFavorite(currentItem)
+                    listener.removeFavorite(currentItem) {
+                        holder.lottieLove.speed = -2F
+                        showLottieAnimation(this, "new_love.json")
+                    }
                     favorites.remove(Favorite(currentItem.id, currentItem.url, currentItem.type, currentItem.price))
                 }
             }

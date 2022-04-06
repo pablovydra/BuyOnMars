@@ -30,7 +30,7 @@ class MarsListFragment : Fragment(), MarsAdapter.MarsAdapterActions {
         viewModel.setAdapterOnView.observe(viewLifecycleOwner, Observer {
             binding.recycler.adapter =
                 viewModel.properties?.value?.let { properties ->
-                    viewModel.favorites.value?.let { favorites -> MarsAdapter(properties, favorites, this, requireContext()) }
+                    viewModel.favorites.value?.let { favorites -> MarsAdapter(properties, favorites.toMutableList(), this, requireContext()) }
                 }
         })
 
@@ -45,8 +45,9 @@ class MarsListFragment : Fragment(), MarsAdapter.MarsAdapterActions {
         callback?.invoke()
     }
 
-    override fun removeFavorite(marsProperty: MarsProperty) {
+    override fun removeFavorite(marsProperty: MarsProperty, callback: (() -> Unit)?) {
         viewModel.delete(marsProperty)
+        callback?.invoke()
     }
 
     override fun navigatToProperty(id: Int) {

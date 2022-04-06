@@ -1,7 +1,10 @@
 package com.example.buyonmars.ui.marslist
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.buyonmars.base.favorites.Favorite
 import com.example.buyonmars.base.favorites.FavoriteRepository
 import com.example.buyonmars.models.dto.ApiResource
@@ -16,7 +19,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MarsListViewModel @Inject constructor(private val marsUseCase: MarsUseCase, private val repository: FavoriteRepository) : ViewModel() {
+class MarsListViewModel @Inject constructor(
+    private val marsUseCase: MarsUseCase,
+    private val repository: FavoriteRepository
+) : ViewModel() {
 
     private var _properties = MutableLiveData<List<MarsProperty>>()
     var properties: LiveData<List<MarsProperty>>? = null
@@ -26,8 +32,7 @@ class MarsListViewModel @Inject constructor(private val marsUseCase: MarsUseCase
         _properties.postValue(properties)
     }
 
-    val favorites = MutableLiveData<MutableList<Favorite>>(mutableListOf())
-
+    val favorites = MutableLiveData<List<Favorite>>(mutableListOf())
     private val buyProperties = MutableLiveData<List<MarsProperty>>()
     private val rentProperties = MutableLiveData<List<MarsProperty>>()
     val setAdapterOnView = MutableLiveData<Boolean>()
@@ -37,9 +42,15 @@ class MarsListViewModel @Inject constructor(private val marsUseCase: MarsUseCase
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.IO)
 
     init {
-        getFavoritesDatabase()
+//        getFavoritesDatabase()
 
         coroutineScope.launch(Dispatchers.IO) {
+
+            getFavoritesByFlows()
+                .collect {
+                    favorites.postValue(it)
+                }
+
             getMarsPropertiesByFlows()
                 .onStart {
                     loading.postValue(true)
@@ -51,6 +62,7 @@ class MarsListViewModel @Inject constructor(private val marsUseCase: MarsUseCase
                 }.collect {
                     setProperties(it)
                 }
+
         }
     }
 
@@ -69,7 +81,6 @@ class MarsListViewModel @Inject constructor(private val marsUseCase: MarsUseCase
             ApiResource.Status.SUCCESS -> {
                 response.data?.let {
                     emit(it)
-                    Log.i("sky", "DATABASE SIZE: ${it.size}")
                 }
             }
             ApiResource.Status.ERROR -> {
@@ -77,9 +88,12 @@ class MarsListViewModel @Inject constructor(private val marsUseCase: MarsUseCase
         }
     }
 
+    fun getFavoritesByFlows(): Flow<List<Favorite>> = flow {
+        emit(repository.getAll())
+    }
+
     private fun getFavoritesDatabase() = viewModelScope.launch {
         favorites.value = repository.getAll()
-        Log.i("sky", "FAVORITE ITEMS: ${(favorites.value as MutableList<Favorite>).size}")
     }
 
     fun insert(marsProperty: MarsProperty) = viewModelScope.launch {

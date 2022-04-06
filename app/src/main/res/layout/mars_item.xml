@@ -77,10 +77,12 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottie_love"
-        android:layout_width="100dp"
-        android:layout_height="200dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/favorite"
-        app:layout_constraintStart_toStartOf="@+id/favorite" />
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        app:layout_constraintBottom_toBottomOf="@+id/photo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/photo"
+        app:layout_constraintTop_toTopOf="@+id/photo"
+        app:lottie_imageAssetsFolder="assets" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
