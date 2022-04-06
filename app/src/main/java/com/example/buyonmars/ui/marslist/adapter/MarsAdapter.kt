@@ -45,8 +45,7 @@ class MarsAdapter(
     override fun onBindViewHolder(holder: MarsViewHolder, position: Int) {
         val currentItem = marsList[position]
 
-        holder.id.text = "# ${currentItem.id}"
-        holder.price.text = "$ ${currentItem.price}"
+        holder.price.text = currentItem.price.toString()
         holder.type.text = currentItem.type
 
         val uri: String = currentItem.url

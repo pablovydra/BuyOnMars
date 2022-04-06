@@ -21,11 +21,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/type"
-        app:layout_constraintEnd_toEndOf="@+id/photo"
-        app:layout_constraintStart_toEndOf="@+id/type"
-        tools:text="$ 4000000.0" />
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/dolar"
+        app:layout_constraintEnd_toStartOf="@+id/favorite"
+        app:layout_constraintStart_toEndOf="@+id/dolar"
+        app:layout_constraintTop_toTopOf="@+id/dolar"
+        tools:text="4000000.0" />
 
     <TextView
         android:id="@+id/type"
@@ -33,11 +34,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="16dp"
         android:padding="5dp"
         android:textAllCaps="true"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/photo"
+        app:layout_constraintTop_toTopOf="@+id/photo"
         tools:text="buy" />
 
     <TextView
@@ -54,13 +55,24 @@
 
     <ImageView
         android:id="@+id/favorite"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="16dp"
-        android:visibility="gone"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/photo"
         app:layout_constraintEnd_toEndOf="@+id/photo"
-        app:layout_constraintTop_toTopOf="@+id/photo"
-        app:srcCompat="@android:drawable/btn_star" />
+        app:srcCompat="@drawable/ic_love_unmark" />
+
+    <ImageView
+        android:id="@+id/dolar"
+        android:layout_width="20dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/favorite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/favorite"
+        app:srcCompat="@drawable/ic_dolar_logo"
+        app:tint="@color/title_no_white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
