@@ -1,5 +1,6 @@
 package com.example.buyonmars.ui.marslist.adapter
 
+import android.animation.Animator
 import android.content.Context
 import android.os.Build
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
 import com.example.buyonmars.R
 import com.example.buyonmars.base.favorites.Favorite
@@ -25,7 +27,7 @@ class MarsAdapter(
     RecyclerView.Adapter<MarsAdapter.MarsViewHolder>() {
 
     interface MarsAdapterActions {
-        fun addToFavorite(mars: MarsProperty)
+        fun addToFavorite(mars: MarsProperty, callback: (() -> Unit)? = null)
         fun removeFavorite(mars: MarsProperty)
         fun navigatToProperty(id: Int)
     }
@@ -40,6 +42,7 @@ class MarsAdapter(
         val type: TextView = itemView.findViewById(R.id.type)
         val id: TextView = itemView.findViewById(R.id.id)
         val favorite: ImageView = itemView.findViewById(R.id.favorite)
+        var lottieLove: LottieAnimationView = itemView.findViewById<View>(R.id.lottie_love) as LottieAnimationView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarsViewHolder {
@@ -72,7 +75,15 @@ class MarsAdapter(
             holder.favorite.setImageResource(R.drawable.ic_love_unmark)
 
             holder.favorite.setOnClickListener {
-                listener.addToFavorite(currentItem)
+                listener.addToFavorite(currentItem) {
+                    holder.lottieLove.apply {
+                        setAnimation("love1.json")
+                        if (!isAnimating) {
+                            playAnimation()
+                        }
+                    }
+
+                }
                 holder.favorite.setImageResource(R.drawable.ic_love)
             }
 

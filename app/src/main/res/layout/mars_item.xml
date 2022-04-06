@@ -75,4 +75,12 @@
         app:srcCompat="@drawable/ic_dolar_logo"
         app:tint="@color/title_no_white" />
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_love"
+        android:layout_width="100dp"
+        android:layout_height="200dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/favorite"
+        app:layout_constraintStart_toStartOf="@+id/favorite" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
