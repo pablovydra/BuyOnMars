@@ -1,12 +1,13 @@
 package com.example.buyonmars.ui.marslist
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.buyonmars.models.dto.ApiResource
 import com.example.buyonmars.models.dto.MarsProperty
 import com.example.buyonmars.models.usecase.MarsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,12 +28,14 @@ class MarsListViewModel @Inject constructor(private val marsUseCase: MarsUseCase
     val setAdapterOnView = MutableLiveData<Boolean>()
     val loading = MutableLiveData<Boolean>()
 
+    private var viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.IO )
+
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        coroutineScope.launch(Dispatchers.IO) {
             getMarsPropertiesByFlows()
                 .onStart {
                     loading.postValue(true)
-                    Log.i("sky", "lets do this")
                 }
                 .cancellable()
                 .onCompletion {
@@ -63,6 +66,11 @@ class MarsListViewModel @Inject constructor(private val marsUseCase: MarsUseCase
             ApiResource.Status.ERROR -> {
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
     }
 
 }
