@@ -26,7 +26,7 @@ class MarsListViewModel @Inject constructor(private val marsUseCase: MarsUseCase
         _properties.postValue(properties)
     }
 
-    val favorites = MutableLiveData<List<Favorite>>(listOf())
+    val favorites = MutableLiveData<MutableList<Favorite>>(mutableListOf())
 
     private val buyProperties = MutableLiveData<List<MarsProperty>>()
     private val rentProperties = MutableLiveData<List<MarsProperty>>()

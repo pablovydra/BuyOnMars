@@ -20,7 +20,7 @@ import java.lang.reflect.Method
 
 class MarsAdapter(
     private val marsList: List<MarsProperty>,
-    private val favorites: List<Favorite>,
+    private val favorites: MutableList<Favorite>,
     val listener: MarsAdapterActions,
     val context: Context
 ) :
@@ -30,10 +30,6 @@ class MarsAdapter(
         fun addToFavorite(mars: MarsProperty, callback: (() -> Unit)? = null)
         fun removeFavorite(mars: MarsProperty)
         fun navigatToProperty(id: Int)
-    }
-
-    fun notifyChanges() {
-        notifyDataSetChanged()
     }
 
     class MarsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -54,60 +50,95 @@ class MarsAdapter(
     }
 
     override fun onBindViewHolder(holder: MarsViewHolder, position: Int) {
-        val currentItem = marsList[position]
+        with(holder) {
+            val currentItem = marsList[position]
 
-        holder.price.text = currentItem.price.toString()
-        holder.type.text = currentItem.type
+            holder.price.text = currentItem.price.toString()
+            holder.type.text = currentItem.type
 
-        val isFavorite = favorites.filter { it.marsId == currentItem.id }
+            var isFavorite = favorites.filter { it.marsId == currentItem.id }
 
-        val uri: String = currentItem.url
+            val uri: String = currentItem.url
 
-        Glide.with(holder.itemView.context)
-            .load(uri)
-            .into(holder.photo)
+            Glide.with(holder.itemView.context)
+                .load(uri)
+                .into(holder.photo)
 
-        holder.itemView.setOnClickListener {
-            listener.navigatToProperty(currentItem.id.toInt())
-        }
+            holder.itemView.setOnClickListener {
+                listener.navigatToProperty(currentItem.id.toInt())
+            }
 
-        if (isFavorite.isEmpty()) {
-            holder.favorite.setImageResource(R.drawable.ic_love_unmark)
+            holder.lottieLove.visibility = View.INVISIBLE
 
-            holder.favorite.setOnClickListener {
-                listener.addToFavorite(currentItem) {
-                    holder.lottieLove.apply {
-                        setAnimation("love1.json")
-                        if (!isAnimating) {
-                            playAnimation()
-                        }
-                    }
-
-                }
+            if (isFavorite.isNotEmpty()) {
                 holder.favorite.setImageResource(R.drawable.ic_love)
+                holder.favorite.tag = R.drawable.ic_love
+            } else {
+                holder.favorite.setImageResource(R.drawable.ic_love_unmark)
+                holder.favorite.tag = R.drawable.ic_love_unmark
             }
-
-        } else {
-            holder.favorite.setImageResource(R.drawable.ic_love)
 
             holder.favorite.setOnClickListener {
-                listener.removeFavorite(currentItem)
-                holder.favorite.setImageResource(R.drawable.ic_love_unmark)
+                if (holder.favorite.tag == R.drawable.ic_love_unmark) {
+                    holder.favorite.setImageResource(R.drawable.ic_love)
+                    holder.favorite.tag = R.drawable.ic_love
+                    listener.addToFavorite(currentItem) {
+                        holder.lottieLove.setAnimation("love.json")
+                        showLottieAnimation(this, "love.json")
+                    }
+                    favorites.add(Favorite(currentItem.id, currentItem.url, currentItem.type, currentItem.price))
+                } else {
+                    holder.favorite.setImageResource(R.drawable.ic_love_unmark)
+                    holder.favorite.tag = R.drawable.ic_love_unmark
+                    listener.removeFavorite(currentItem)
+                    favorites.remove(Favorite(currentItem.id, currentItem.url, currentItem.type, currentItem.price))
+                }
             }
-        }
 
-        when (currentItem.type) {
-            "buy" -> holder.type.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.brand_primary))
-            "rent" -> holder.type.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.brand_secondary))
-        }
+            when (currentItem.type) {
+                "buy" -> holder.type.setBackgroundColor(
+                    ContextCompat.getColor(
+                        holder.itemView.context,
+                        R.color.brand_primary
+                    )
+                )
+                "rent" -> holder.type.setBackgroundColor(
+                    ContextCompat.getColor(
+                        holder.itemView.context,
+                        R.color.brand_secondary
+                    )
+                )
+            }
 
-        holder.itemView.setOnLongClickListener(View.OnLongClickListener {
-            showPopupMenu(context, it, currentItem, position)
-            return@OnLongClickListener true
-        })
+            holder.itemView.setOnLongClickListener(View.OnLongClickListener {
+                showPopupMenu(context, it, currentItem, position)
+                return@OnLongClickListener true
+            })
+        }
     }
 
     override fun getItemCount() = marsList.size
+
+    private fun showLottieAnimation(marsViewHolder: MarsViewHolder, animationUrl: String) {
+        marsViewHolder.lottieLove.apply {
+            setAnimation(animationUrl)
+            if (!isAnimating) {
+
+                marsViewHolder.lottieLove.visibility = View.VISIBLE
+
+                addAnimatorListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        marsViewHolder.lottieLove.visibility = View.INVISIBLE
+                    }
+
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                })
+                playAnimation()
+            }
+        }
+    }
 
     private fun showPopupMenu(context: Context, v: View, mars: MarsProperty, position: Int) {
         val popup = PopupMenu(context, v)
