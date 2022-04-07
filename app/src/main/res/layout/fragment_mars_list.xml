@@ -25,19 +25,16 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/mars_item" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:max="3"
-            android:progress="100"
-            android:theme="@style/Widget.AppCompat.ProgressBar"
-            android:visibility="@{viewModel.loading == true ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="@+id/container"
-            app:layout_constraintEnd_toEndOf="@+id/container"
-            app:layout_constraintStart_toStartOf="@+id/container"
-            app:layout_constraintTop_toTopOf="parent" />
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:visibility="@{viewModel.loading ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/recycler"
+            app:layout_constraintEnd_toEndOf="@+id/recycler"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_imageAssetsFolder="assets" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

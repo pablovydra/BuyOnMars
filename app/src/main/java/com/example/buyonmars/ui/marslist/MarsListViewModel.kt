@@ -1,6 +1,5 @@
 package com.example.buyonmars.ui.marslist
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,11 +10,8 @@ import com.example.buyonmars.models.dto.ApiResource
 import com.example.buyonmars.models.dto.MarsProperty
 import com.example.buyonmars.models.usecase.MarsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,17 +32,18 @@ class MarsListViewModel @Inject constructor(
     private val buyProperties = MutableLiveData<List<MarsProperty>>()
     private val rentProperties = MutableLiveData<List<MarsProperty>>()
     val setAdapterOnView = MutableLiveData<Boolean>()
-    val loading = MutableLiveData<Boolean>()
+    val loading = MutableLiveData<Boolean>(true)
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.IO)
 
     init {
-//        getFavoritesDatabase()
-
         coroutineScope.launch(Dispatchers.IO) {
 
             getFavoritesByFlows()
+                .onStart {
+                    loading.postValue(true)
+                }
                 .collect {
                     favorites.postValue(it)
                 }
@@ -59,6 +56,7 @@ class MarsListViewModel @Inject constructor(
                 .onCompletion {
                     filterPropertiesByTypes()
                     setAdapterOnView.postValue(true)
+                    loading.postValue(false)
                 }.collect {
                     setProperties(it)
                 }

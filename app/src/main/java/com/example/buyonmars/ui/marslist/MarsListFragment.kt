@@ -34,6 +34,20 @@ class MarsListFragment : Fragment(), MarsAdapter.MarsAdapterActions {
                 }
         })
 
+        viewModel.loading.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                binding.lottie.visibility = View.VISIBLE
+            } else {
+                binding.lottie.visibility = View.GONE
+            }
+        })
+
+        binding.lottie.apply {
+            setAnimation("rocket.json")
+            loop(true)
+            playAnimation()
+        }
+
         binding.recycler.layoutManager = GridLayoutManager(this.context, 2)
         binding.recycler.setHasFixedSize(true)
 
