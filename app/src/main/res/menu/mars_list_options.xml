@@ -5,16 +5,16 @@
         android:id="@+id/all_view_option"
         android:title="@string/all" />
 
-    <item
-        android:id="@+id/buy_view_option"
-        android:title="@string/buy" />
+<!--    <item-->
+<!--        android:id="@+id/buy_view_option"-->
+<!--        android:title="@string/buy" />-->
 
-    <item
-        android:id="@+id/rent_view_option"
-        android:title="@string/rent" />
+<!--    <item-->
+<!--        android:id="@+id/rent_view_option"-->
+<!--        android:title="@string/rent" />-->
 
-    <item
-        android:id="@+id/favorites_view_option"
-        android:title="@string/favorites" />
+<!--    <item-->
+<!--        android:id="@+id/favorites_view_option"-->
+<!--        android:title="@string/favorites" />-->
 
 </menu>

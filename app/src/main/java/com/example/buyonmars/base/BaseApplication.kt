@@ -7,6 +7,8 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class BaseApplication : Application() {
 
+    lateinit var serviceManager: ServiceManager
+
     companion object {
         lateinit var instance: BaseApplication
         fun getApplicationState(context: Context): BaseApplication {
@@ -17,6 +19,7 @@ class BaseApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        serviceManager = AndroidServiceManager(this)
     }
 
 }
