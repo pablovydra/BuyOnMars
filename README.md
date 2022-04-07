@@ -7,6 +7,9 @@ This repository contains an Android project using Kotlin, MVVM + Clean Architect
 ## App Features
 * Show list of Mars images, with different types and prices, with the possibility to add favorites.
 
+## App demo 
+<img width="309" height="550" src="screenshots/1.gif"><img width="309" height="550" src="screenshots/2.gif">
+
 ## Library Used
 * [Dependency injection with Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
 * [Kotlin flows](https://developer.android.com/kotlin/flow)
