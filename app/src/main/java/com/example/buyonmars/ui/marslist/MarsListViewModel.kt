@@ -42,8 +42,6 @@ class MarsListViewModel @Inject constructor(
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.IO)
 
     init {
-//        getFavoritesDatabase()
-
         coroutineScope.launch(Dispatchers.IO) {
 
             getFavoritesByFlows()
